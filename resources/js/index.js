@@ -1,13 +1,45 @@
-var notes;
-var count = 0;
-
 document.addEventListener("DOMContentLoaded", function() {
-    notes = document.getElementById("notes");
+    loadFromLocalStorage();
 
-    document.getElementById("create-note").addEventListener("click", createNote);
+    document.getElementById("create-note").addEventListener("click", function () {
+        createNote();
+    });
+
+    window.addEventListener("beforeunload", saveToLocalStorage);
 });
 
-function createNote() {
+function loadFromLocalStorage() {
+    var storedNotes = localStorage.getItem("notes");
+
+    if(storedNotes) {
+        var notesArray = JSON.parse(storedNotes);
+
+        for(var i = 0; i<notesArray.length; i++) {
+            var storedNote = notesArray[i];
+            createNote(storedNote.Title, storedNote.Content);
+        }
+    }
+}
+
+function saveToLocalStorage() {
+    var notesArray = new Array();
+
+    var notesContent = document.getElementsByClassName("note-container");
+
+    if(notesContent) {
+        for(var i = 0; i < notesContent.length; i++) {
+            var title = notesContent[i].querySelector(".note-title").innerHTML;
+            var content = notesContent[i].querySelector(".note-content").value;
+
+            notesArray.push({Title: title, Content: content});
+        }
+
+        var jsonStr = JSON.stringify(notesArray);
+        localStorage.setItem("notes", jsonStr);
+    }
+}
+
+function createNote(title, content) {
     function createNoteContainer() {
         var noteContainer = document.createElement("div");
         noteContainer.setAttribute("class", "note-container");
@@ -38,30 +70,48 @@ function createNote() {
 
     function createRemoveButton() {
         var removeButton = document.createElement("button");
-        removeButton.setAttribute("id", "remove-button-" + ++count);
+        removeButton.setAttribute("class", "remove-button");
         removeButton.setAttribute("type", "button");
         removeButton.appendChild(document.createTextNode("X"));
 
         return removeButton;
     }
 
-    function addNewNode() {
+    function removeNote(note) {
+        note.parentNode.removeChild(note);
+    }
+
+    function addRemoveEvent(note) {
+        note.querySelector(".remove-button").addEventListener("click", function() {
+            removeNote(note);
+        });
+    }
+
+    function addNewNode(notes) {
         var note = document.createElement("li");
-        note.setAttribute("id", "note-id-" + count);
         note.appendChild(createNoteContainer());
 
         notes.appendChild(note);
+
+        addRemoveEvent(note);
     }
 
-    function removeNote() {
-        var note = document.getElementById("note-id-" + count);
-        note.remove();
+    function setTitle(title) {
+        if (title) {
+            notes.lastElementChild.querySelector(".note-title").innerHTML = title;
+        }
     }
 
-    function addRemoveEvent() {
-        document.getElementById("remove-button-" +count).addEventListener("click", removeNote);
+    function setContent(content) {
+        if (content) {
+            notes.lastElementChild.querySelector(".note-content").innerHTML = content;
+        }
     }
 
-    addNewNode();
-    addRemoveEvent();
+    var notes = document.getElementById("notes");
+
+    addNewNode(notes);
+
+    setTitle(title);
+    setContent(content);
 }
