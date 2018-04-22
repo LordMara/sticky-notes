@@ -10,3 +10,8 @@ Your task is to create an application for taking notes. Please check the user st
 * As a user, I want my notes to be available after the browser restart so that I can come back to my notes after restarting the browser (use _localStorage_ or _AJAX_ call to your API).
 
 That's all, only 5 user stories ;) Good luck!
+
+## Usage
+
+Try application at:
+[https://lordmara.github.io/sticky-notes/](https://lordmara.github.io/sticky-notes/)
